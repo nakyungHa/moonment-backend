@@ -5,7 +5,18 @@ spring:
   datasource:
     url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
     username: postgres.idpxmyxsstkhneqkeuda
-    password: ${DB_PASSWORD}
+    password: Moonment1234!
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 539950730703-fo2t0i1ahlo0oesqlsc4gofei7qclkhk.apps.googleusercontent.com
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - profile
+              - email
 
   jpa:
     hibernate:
