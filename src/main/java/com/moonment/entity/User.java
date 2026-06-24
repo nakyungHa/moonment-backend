@@ -26,9 +26,17 @@ public class User {
 
     private String name;
 
+    private String sex;
+
+    private String goal;
+
     private Boolean alertEnabled;
 
     private Boolean aiAnalysisEnabled;
+
+    private String preferredTime;
+
+    private String role;
 
     private LocalDateTime createdAt;
 }
