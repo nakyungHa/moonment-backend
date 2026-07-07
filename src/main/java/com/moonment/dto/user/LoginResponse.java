@@ -1,4 +1,4 @@
-package com.moonment.dto;
+package com.moonment.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
