@@ -3,16 +3,16 @@ spring:
     name: moonment-backend
 
   datasource:
-    url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
-    username: postgres.idpxmyxsstkhneqkeuda
-    password: Moonment1234!
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: 539950730703-fo2t0i1ahlo0oesqlsc4gofei7qclkhk.apps.googleusercontent.com
+            client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - profile
@@ -27,3 +27,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000
