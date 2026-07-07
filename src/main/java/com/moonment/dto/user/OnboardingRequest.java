@@ -1,4 +1,4 @@
-package com.moonment.dto;
+package com.moonment.dto.user;
 
 import com.moonment.enums.Goal;
 import com.moonment.enums.PreferredTime;

@@ -81,4 +81,20 @@ public class User {
         this.role = role;
         this.createdAt = createdAt;
     }
+
+    public void updateOnboarding(
+            String name,
+            Sex sex,
+            Goal goal,
+            PreferredTime preferredTime,
+            Boolean alertEnabled,
+            Boolean aiAnalysisEnabled
+    ) {
+        this.name = name;
+        this.sex = sex;
+        this.goal = goal;
+        this.preferredTime = preferredTime;
+        this.alertEnabled = alertEnabled;
+        this.aiAnalysisEnabled = aiAnalysisEnabled;
+    }
 }
