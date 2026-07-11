@@ -29,10 +29,7 @@ public class Answer {
     private LocalDateTime answeredAt;
 
     @Column(columnDefinition = "TEXT")
-    private String contentMain;
-
-    @Column(columnDefinition = "TEXT")
-    private String contentSub;
+    private String content;
 
     private Boolean isSkipped;
 }
