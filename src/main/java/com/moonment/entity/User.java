@@ -5,6 +5,7 @@ import com.moonment.enums.PreferredTime;
 import com.moonment.enums.Role;
 import com.moonment.enums.Sex;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ import java.util.UUID;
 @Entity
 @Table(name="users")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class User {
 
@@ -24,9 +27,14 @@ public class User {
     @Column(name="user_id")
     private UUID userId;
 
+    //로그인 구조 변경 -> id, pw 사용
+    private String loginId;
+
+    private String password;
+
     private String email;
 
-    private String socialId;
+    //private String socialId;
 
     private String name;
 
@@ -55,32 +63,6 @@ public class User {
     private Role role;
 
     private LocalDateTime createdAt;
-
-    @Builder
-    public User(UUID userId,
-                String email,
-                String socialId,
-                String name,
-                Sex sex,
-                Goal goal,
-                Boolean alertEnabled,
-                Boolean aiAnalysisEnabled,
-                PreferredTime preferredTime,
-                Role role,
-                LocalDateTime createdAt) {
-
-        this.userId = userId;
-        this.email = email;
-        this.socialId = socialId;
-        this.name = name;
-        this.sex = sex;
-        this.goal = goal;
-        this.alertEnabled = alertEnabled;
-        this.aiAnalysisEnabled = aiAnalysisEnabled;
-        this.preferredTime = preferredTime;
-        this.role = role;
-        this.createdAt = createdAt;
-    }
 
     public void updateOnboarding(
             String name,
