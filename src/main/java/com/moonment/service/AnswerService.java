@@ -11,6 +11,7 @@ import com.moonment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,13 @@ public class AnswerService {
             answers.add(answer);
         }
         answerRepository.saveAll(answers);
+    }
+
+    public List<Answer> getAnswers(UUID userId, LocalDate recordDate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return answerRepository.findByUserAndRecordDate(user, recordDate);
     }
 
 }
