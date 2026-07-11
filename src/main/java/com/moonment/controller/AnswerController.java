@@ -3,6 +3,7 @@ package com.moonment.controller;
 import com.moonment.dto.answer.SaveAnswerRequest;
 import com.moonment.service.AnswerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +15,8 @@ public class AnswerController {
 
     private final AnswerService answerService;
 
-    public void saveAnswers(@RequestBody SaveAnswerRequest request) {
+    public ResponseEntity<Void> saveAnswers(@RequestBody SaveAnswerRequest request) {
         answerService.saveAnswers(request);
+        return ResponseEntity.ok().build();
     }
 }
