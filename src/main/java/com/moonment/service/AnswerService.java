@@ -7,6 +7,7 @@ import com.moonment.entity.Question;
 import com.moonment.entity.User;
 import com.moonment.repository.AnswerRepository;
 import com.moonment.repository.QuestionRepository;
+import com.moonment.repository.StreakRepository;
 import com.moonment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final StreakService streakService;
 
     public void saveAnswers(SaveAnswerRequest request) {
 
@@ -58,6 +60,7 @@ public class AnswerService {
             answers.add(answer);
         }
         answerRepository.saveAll(answers);
+        streakService.updateStreak(user);
     }
 
     public List<Answer> getAnswers(UUID userId, LocalDate recordDate) {
