@@ -1,9 +1,13 @@
 package com.moonment.controller;
 
-import com.moonment.config.JwtProvider;
-import com.moonment.dto.home.HomeResponse;import com.moonment.service.HomeService;import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestHeader;import org.springframework.web.bind.annotation.RequestMapping;
+import com.moonment.dto.home.HomeResponse;
+import com.moonment.service.HomeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/home")
@@ -11,13 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
 
     private final HomeService homeService;
-    private final JwtProvider jwtProvider;
 
     public HomeResponse home(
-            @RequestHeader("Authorization") String authorization) {
-        String token = authorization.substring(7);
-        String email = jwtProvider.getEmail(token);
-        return homeService.getHome(email);
+            @RequestParam UUID userId
+    ) {
+        return homeService.getHome(userId);
     }
 
 }
