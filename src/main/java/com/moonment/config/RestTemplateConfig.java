@@ -1,0 +1,23 @@
+package com.moonment.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
+
+@Configuration
+public class RestTemplateConfig {
+
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder,
+									  @Value("${fastapi.connect-timeout-ms}") long connectTimeoutMs,
+									  @Value("${fastapi.read-timeout-ms}") long readTimeoutMs) {
+		return builder
+				.connectTimeout(Duration.ofMillis(connectTimeoutMs))
+				.readTimeout(Duration.ofMillis(readTimeoutMs))
+				.build();
+	}
+}
