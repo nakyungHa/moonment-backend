@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class InsightService {
 
     // 조건을 바꾸려면 이 숫자만 수정하면 된다.
-    private static final int MIN_RECORDS_FOR_INSIGHT = 1;
+    private static final int MIN_RECORDS_FOR_INSIGHT = 3;
 
     private static final String WEEKLY_REPORT_PATH = "/pipeline/weekly-report";
 
@@ -92,7 +92,7 @@ public class InsightService {
             return false;
         }
 
-        WeeklyReportRequest request = buildRequest(user, weekStart, answers);
+        WeeklyReportRequest request = buildRequest(user, weekStart, recordCount, answers);
         WeeklyReportResponse response = callFastApi(request);
 
         if (response == null || !response.isCompleted()) {
@@ -113,6 +113,8 @@ public class InsightService {
         return true;
     }
 
+    // 이 값이 "기록한 날 수"의 유일한 기준(single source of truth)이다.
+    // moonment-ai에는 이 값을 recordCount로 그대로 넘겨주고, Python 쪽에서 별도로 재계산하지 않는다(B3).
     private int countRecordedDays(List<AnswerProjection> answers) {
         return (int) answers.stream()
                 .filter(a -> !a.skipped())
@@ -121,7 +123,7 @@ public class InsightService {
                 .count();
     }
 
-    private WeeklyReportRequest buildRequest(User user, LocalDate weekStart, List<AnswerProjection> answers) {
+    private WeeklyReportRequest buildRequest(User user, LocalDate weekStart, int recordCount, List<AnswerProjection> answers) {
         Map<LocalDate, List<AnswerPayload>> byDate = answers.stream()
                 .collect(Collectors.groupingBy(
                         AnswerProjection::recordDate,
@@ -137,7 +139,7 @@ public class InsightService {
                 .toList();
 
         String userContext = user.getGoal() != null ? user.getGoal().getValue() : null;
-        return new WeeklyReportRequest(user.getUserId(), weekStart, userContext, dailyEntries);
+        return new WeeklyReportRequest(user.getUserId(), user.getName(), weekStart, userContext, recordCount, dailyEntries);
     }
 
     private WeeklyReportResponse callFastApi(WeeklyReportRequest request) {
