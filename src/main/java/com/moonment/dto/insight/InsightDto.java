@@ -15,8 +15,12 @@ public class InsightDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record WeeklyReportRequest(
             @JsonProperty("user_id") UUID userId,
+            // 리포트 이미지(B5)에 "OOO님의 O월 O주차" 형태로 표시하기 위한 사용자 이름.
+            @JsonProperty("user_name") String userName,
             @JsonProperty("week_start") LocalDate weekStart,
             @JsonProperty("user_context") String userContext,
+            // Spring이 DB 기준으로 계산한 값. Python은 이 값을 그대로 써야 함(B3 — 양쪽에서 따로 세지 않기 위함).
+            @JsonProperty("record_count") Integer recordCount,
             @JsonProperty("daily_entries") List<DailyEntry> dailyEntries
     ) {}
 
@@ -36,6 +40,8 @@ public class InsightDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record WeeklyReportResponse(
             String status,
+            // 프론트 리포트 화면 헤더 "OOO님의 O월 O주차"에 쓰이는 사용자 이름.
+            @JsonProperty("user_name") String userName,
             @JsonProperty("week_start") LocalDate weekStart,
             List<String> keywords,
             @JsonProperty("summary_message") String summaryMessage,
@@ -46,7 +52,9 @@ public class InsightDto {
             @JsonProperty("generation_meta") GenerationMeta generationMeta,
             @JsonProperty("error_code") String errorCode,
             @JsonProperty("error_message") String errorMessage,
-            @JsonProperty("retry_suggested") Boolean retrySuggested
+            @JsonProperty("retry_suggested") Boolean retrySuggested,
+            // 데모용 리포트 이미지(B5). base64 순수 데이터, 없으면 null.
+            @JsonProperty("report_image_base64") String reportImageBase64
     ) {
         public boolean isCompleted() {
             return "completed".equals(status);
