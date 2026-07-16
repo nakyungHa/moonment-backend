@@ -8,7 +8,6 @@ import com.moonment.entity.StreakHistory;
 import com.moonment.entity.User;
 import com.moonment.repository.AnswerRepository;
 import com.moonment.repository.StreakHistoryRepository;
-import com.moonment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +21,14 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ArchiveService {
 
-    private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final StreakHistoryRepository streakHistoryRepository;
 
     public ArchiveCalendarResponse getCalendar(
-            UUID userId,
+            User user,
             Integer year,
             Integer month
     ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("User not found"));
-
         // 받아온 year와 month 가지고 YearMonth 타입의 변수 저장
         // YearMonth 클래스에서 그 해의 그 달의 첫날(항상 1일)과
         // 마지막날 (28, 29, 30, 31 등)이 정보를 받아올 수 있음
@@ -91,10 +85,7 @@ public class ArchiveService {
         return new ArchiveCalendarResponse(year, month, days);
     }
 
-    public ArchiveDayStatusResponse getDayStatus(UUID userId, LocalDate date) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
+    public ArchiveDayStatusResponse getDayStatus(User user, LocalDate date) {
         boolean hasRecord = answerRepository.existsByUserAndRecordDate(user, date);
 
         LocalDate weekStart = date.with(

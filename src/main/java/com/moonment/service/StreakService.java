@@ -41,7 +41,8 @@ public class StreakService {
              return;
         }
         // 이미 오늘의 streak이 올라 갔을 때 -> streak ++ 막기
-        if (streak.getLastRecordDate().equals(today)) {
+        // (회원가입 때 만들어지는 streak는 lastRecordDate가 null이라 여기서 바로 increase로 진행돼야 함)
+        if (streak.getLastRecordDate() != null && streak.getLastRecordDate().equals(today)) {
             return;
         }
         // streak 업데이트
