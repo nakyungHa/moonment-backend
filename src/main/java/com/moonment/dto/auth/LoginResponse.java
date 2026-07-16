@@ -1,4 +1,4 @@
-package com.moonment.dto.user;
+package com.moonment.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,8 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LoginResponse {
-
     private String accessToken;
-    private boolean isNewUser;
-
+    private String nickname;
 }
