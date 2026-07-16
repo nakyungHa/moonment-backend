@@ -1,7 +1,6 @@
 package com.moonment.entity;
 
 import com.moonment.enums.Goal;
-import com.moonment.enums.PreferredTime;
 import com.moonment.enums.Role;
 import com.moonment.enums.Sex;
 import jakarta.persistence.*;
@@ -13,6 +12,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +24,7 @@ import java.util.UUID;
 public class User {
 
     @Id
+    @GeneratedValue
     @Column(name="user_id")
     private UUID userId;
 
@@ -52,10 +53,7 @@ public class User {
 
     private Boolean aiAnalysisEnabled;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(columnDefinition = "preferred_time_type")
-    private PreferredTime preferredTime;
+    private LocalTime recordTime;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -64,19 +62,4 @@ public class User {
 
     private LocalDateTime createdAt;
 
-    public void updateOnboarding(
-            String name,
-            Sex sex,
-            Goal goal,
-            PreferredTime preferredTime,
-            Boolean alertEnabled,
-            Boolean aiAnalysisEnabled
-    ) {
-        this.name = name;
-        this.sex = sex;
-        this.goal = goal;
-        this.preferredTime = preferredTime;
-        this.alertEnabled = alertEnabled;
-        this.aiAnalysisEnabled = aiAnalysisEnabled;
-    }
 }
