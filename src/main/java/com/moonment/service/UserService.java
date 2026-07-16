@@ -1,6 +1,6 @@
 package com.moonment.service;
 
-import com.moonment.dto.user.OnboardingRequest;
+//import com.moonment.dto.user.OnboardingRequest;
 import com.moonment.entity.User;
 import com.moonment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    /*
 
     private final UserRepository userRepository;
 
@@ -27,5 +28,5 @@ public class UserService {
         );
 
         userRepository.save(user);
-    }
+    }*/
 }
