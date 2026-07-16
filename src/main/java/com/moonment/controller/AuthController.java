@@ -1,7 +1,6 @@
 package com.moonment.controller;
 
-import com.moonment.dto.user.GoogleLoginRequest;
-import com.moonment.dto.user.LoginResponse;
+import com.moonment.dto.auth.CheckLoginIdResponse;
 import com.moonment.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +12,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/google")
-    public LoginResponse googleLogin(
-            @RequestBody GoogleLoginRequest request
-    ) {
-       return authService.googleLogin(request);
+    public CheckLoginIdResponse checkLoginId(@RequestParam String loginId) {
+        boolean available = authService.isLoginIdAvailable(loginId);
+
+        return new CheckLoginIdResponse(available);
     }
+
 
 }
