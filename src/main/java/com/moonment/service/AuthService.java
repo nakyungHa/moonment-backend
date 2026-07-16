@@ -38,7 +38,7 @@ public class AuthService {
             user = User.builder()
                     .userId(UUID.randomUUID())
                     .email(email)
-                    .socialId(socialId)
+                    //.socialId(socialId)
                     .name(name)
                     .role(Role.USER)
                     .alertEnabled(false)
