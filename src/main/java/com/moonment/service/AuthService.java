@@ -1,5 +1,8 @@
 package com.moonment.service;
 
+import com.moonment.config.JwtProvider;
+import com.moonment.dto.auth.LoginRequest;
+import com.moonment.dto.auth.LoginResponse;
 import com.moonment.dto.auth.SignupRequest;
 import com.moonment.dto.auth.SignupResponse;
 import com.moonment.entity.Streak;
@@ -27,6 +30,7 @@ public class AuthService {
     private final TermsAgreementRepository termsAgreementRepository;
     private final StreakRepository streakRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     public boolean isLoginIdAvailable(String loginId) {
         return !userRepository.existsByLoginId(loginId);
@@ -104,4 +108,22 @@ public class AuthService {
         termsAgreementRepository.save(agreement);
     }
 
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByLoginId(request.getLoginId())
+                .orElseThrow(() -> new IllegalArgumentException("아이디가 올바르지 않습니다."));
+        boolean passwordMatches = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword()
+        );
+        if (!passwordMatches) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+        // 아이디, 비밀번호 일치하면 accessToken 발급
+        String accessToken = jwtProvider.createAccessToken(user);
+
+        return new LoginResponse(
+                accessToken,
+                user.getName()
+        );
+    }
 }
