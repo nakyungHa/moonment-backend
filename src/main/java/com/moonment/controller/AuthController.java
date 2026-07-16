@@ -12,11 +12,12 @@ public class AuthController {
 
     private final AuthService authService;
 
-    public CheckLoginIdResponse checkLoginId(@RequestParam String loginId) {
+    @GetMapping("/check-id")
+    public CheckLoginIdResponse checkLoginId(
+            @RequestParam String loginId
+    ) {
         boolean available = authService.isLoginIdAvailable(loginId);
 
         return new CheckLoginIdResponse(available);
     }
-
-
 }
