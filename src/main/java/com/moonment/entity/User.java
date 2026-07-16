@@ -62,4 +62,14 @@ public class User {
 
     private LocalDateTime createdAt;
 
+    public void updateProfile(String name, Sex sex, Goal goal, LocalTime recordTime,
+                               Boolean alertEnabled, Boolean aiAnalysisEnabled) {
+        if (name != null) this.name = name;
+        if (sex != null) this.sex = sex;
+        if (goal != null) this.goal = goal;
+        if (recordTime != null) this.recordTime = recordTime;
+        if (alertEnabled != null) this.alertEnabled = alertEnabled;
+        if (aiAnalysisEnabled != null) this.aiAnalysisEnabled = aiAnalysisEnabled;
+    }
+
 }
