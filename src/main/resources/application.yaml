@@ -1,18 +1,17 @@
 spring:
   application:
     name: moonment-backend
-
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.micrometer.metrics.autoconfigure.system.SystemMetricsAutoConfiguration
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
   jpa:
     hibernate:
       ddl-auto: validate
-
     show-sql: true
-
     properties:
       hibernate:
         format_sql: true
