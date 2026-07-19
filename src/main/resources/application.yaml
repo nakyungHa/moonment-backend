@@ -36,5 +36,4 @@ management:
         include: health
   metrics:
     enable:
-      system: false
-      process: false
+      all: false
