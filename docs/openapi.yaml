@@ -1,0 +1,617 @@
+openapi: 3.0.3
+info:
+  title: Moonment API
+  description: |
+    Moonment 서비스의 REST API 명세서입니다.
+    하루의 질문에 답하며 기록을 쌓아가는 서비스의 백엔드(Spring Boot) API입니다.
+  version: "0.0.1"
+servers:
+  - url: https://moonment-backend-production.up.railway.app
+    description: Production (Railway)
+  - url: http://localhost:8080
+    description: Local
+
+tags:
+  - name: Auth
+    description: 회원가입 / 로그인
+  - name: User
+    description: 사용자 프로필
+  - name: Home
+    description: 홈 화면
+  - name: Question
+    description: 질문
+  - name: Answer
+    description: 답변
+  - name: Archive
+    description: 기록 캘린더 / 일자별 상세
+  - name: Insight
+    description: 주간 인사이트 리포트
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/auth/check-id:
+    get:
+      tags: [Auth]
+      summary: 아이디 중복 확인
+      security: []
+      parameters:
+        - name: loginId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 사용 가능 여부
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckLoginIdResponse"
+
+  /api/auth/signup:
+    post:
+      tags: [Auth]
+      summary: 회원가입
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+      responses:
+        "200":
+          description: 회원가입 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupResponse"
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: 로그인
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: 로그인 성공 (JWT 발급)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+
+  /api/users/me:
+    get:
+      tags: [User]
+      summary: 내 프로필 조회
+      responses:
+        "200":
+          description: 프로필 정보
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileResponse"
+    patch:
+      tags: [User]
+      summary: 내 프로필 수정
+      description: 요청 바디에서 null이 아닌 필드만 반영됩니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: 수정된 프로필 정보
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileResponse"
+
+  /api/home:
+    get:
+      tags: [Home]
+      summary: 홈 화면 데이터 조회
+      responses:
+        "200":
+          description: 홈 화면 데이터
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HomeResponse"
+
+  /api/questions/today:
+    get:
+      tags: [Question]
+      summary: 오늘의 질문 목록 조회
+      responses:
+        "200":
+          description: 오늘의 질문 목록
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionListResponse"
+
+  /api/questions/{id}:
+    get:
+      tags: [Question]
+      summary: 질문 상세 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: 질문 상세
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionResponse"
+
+  /api/answers:
+    post:
+      tags: [Answer]
+      summary: 답변 저장
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveAnswerRequest"
+      responses:
+        "200":
+          description: 저장 성공 (본문 없음)
+
+  /api/answers/{recordDate}:
+    get:
+      tags: [Answer]
+      summary: 날짜별 답변 조회
+      parameters:
+        - name: recordDate
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: 날짜별 답변 목록
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnswerListResponse"
+
+  /api/archive/calendar:
+    get:
+      tags: [Archive]
+      summary: 아카이브 캘린더 조회
+      parameters:
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: 월별 캘린더 데이터
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchiveCalendarResponse"
+
+  /api/archive/{date}:
+    get:
+      tags: [Archive]
+      summary: 날짜별 아카이브 상세 조회
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: 날짜별 상세 상태
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchiveDayStatusResponse"
+
+  /api/archive/insight/{weekStart}:
+    get:
+      tags: [Insight]
+      summary: 주간 인사이트 조회
+      description: |
+        조회 전용 API. FastAPI가 매주 월요일 스케줄러로 미리 생성해둔 리포트를 그대로 반환합니다.
+        기록이 부족해 리포트가 없는 경우 status가 "no_report"인 응답을 반환합니다.
+      parameters:
+        - name: weekStart
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: 주간 인사이트 리포트
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/WeeklyReportResponse"
+                  - $ref: "#/components/schemas/NoReportResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        /api/auth/check-id, /api/auth/signup, /api/auth/login, /actuator/health를 제외한
+        모든 엔드포인트는 JWT 인증(Authorization: Bearer {accessToken})이 필요합니다.
+
+  schemas:
+    Sex:
+      type: string
+      enum: [male, female]
+
+    Goal:
+      type: string
+      description: 사용자가 설정한 기록 목표
+      enum:
+        - 기록_습관화
+        - 주5회_이상_기록
+        - 감정_이해
+        - 자기_성찰
+        - 스트레스_관리
+        - 일상_기록
+
+    # ---------- Auth ----------
+    CheckLoginIdResponse:
+      type: object
+      properties:
+        available:
+          type: boolean
+
+    SignupRequest:
+      type: object
+      properties:
+        loginId:
+          type: string
+        password:
+          type: string
+        passwordConfirm:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        sex:
+          $ref: "#/components/schemas/Sex"
+        recordTime:
+          type: string
+          format: time
+          example: "21:00:00"
+        goal:
+          $ref: "#/components/schemas/Goal"
+        serviceTermsAgreed:
+          type: boolean
+        privacyTermsAgreed:
+          type: boolean
+        aiAnalysisTermsAgreed:
+          type: boolean
+
+    SignupResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        message:
+          type: string
+
+    LoginRequest:
+      type: object
+      properties:
+        loginId:
+          type: string
+        password:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        nickname:
+          type: string
+
+    # ---------- User ----------
+    UserProfileResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        sex:
+          $ref: "#/components/schemas/Sex"
+        goal:
+          $ref: "#/components/schemas/Goal"
+        recordTime:
+          type: string
+          format: time
+        alertEnabled:
+          type: boolean
+        aiAnalysisEnabled:
+          type: boolean
+
+    UpdateUserRequest:
+      type: object
+      description: null이 아닌 필드만 반영됨
+      properties:
+        name:
+          type: string
+        sex:
+          $ref: "#/components/schemas/Sex"
+        goal:
+          $ref: "#/components/schemas/Goal"
+        recordTime:
+          type: string
+          format: time
+        alertEnabled:
+          type: boolean
+        aiAnalysisEnabled:
+          type: boolean
+
+    # ---------- Home ----------
+    HomeResponse:
+      type: object
+      properties:
+        nickname:
+          type: string
+        answeredToday:
+          type: boolean
+        streakCount:
+          type: integer
+        remainingDays:
+          type: integer
+        oneWeekAgo:
+          type: string
+          format: date
+
+    # ---------- Question ----------
+    QuestionResponse:
+      type: object
+      properties:
+        questionId:
+          type: integer
+        type:
+          type: string
+        content:
+          type: string
+
+    QuestionListResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionResponse"
+
+    # ---------- Answer ----------
+    AnswerItemRequest:
+      type: object
+      properties:
+        questionId:
+          type: integer
+        content:
+          type: string
+
+    SaveAnswerRequest:
+      type: object
+      properties:
+        recordDate:
+          type: string
+          format: date
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnswerItemRequest"
+
+    AnswerResponse:
+      type: object
+      properties:
+        questionId:
+          type: integer
+        questionType:
+          type: string
+        question:
+          type: string
+        content:
+          type: string
+
+    AnswerListResponse:
+      type: object
+      properties:
+        recordDate:
+          type: string
+          format: date
+        hasRecord:
+          type: boolean
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnswerResponse"
+
+    # ---------- Archive ----------
+    ArchiveCalendarDayResponse:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        hasRecord:
+          type: boolean
+        moonLevel:
+          type: integer
+
+    ArchiveCalendarResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArchiveCalendarDayResponse"
+
+    ArchiveDayStatusResponse:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        hasRecord:
+          type: boolean
+        canViewInsight:
+          type: boolean
+        weekStart:
+          type: string
+          format: date
+
+    # ---------- Insight ----------
+    InsightStats:
+      type: object
+      properties:
+        totalRecords:
+          type: integer
+        avgEmotion:
+          type: number
+          format: double
+        emotionVolatility:
+          type: number
+          format: double
+        emotionTrend:
+          type: string
+        lowStreak:
+          type: integer
+
+    InsightItem:
+      type: object
+      properties:
+        title:
+          type: string
+        bullets:
+          type: array
+          items:
+            type: string
+
+    Recommendation:
+      type: object
+      properties:
+        icon:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+
+    EmotionPoint:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        score:
+          type: integer
+
+    GenerationMeta:
+      type: object
+      properties:
+        model:
+          type: string
+        inputTokens:
+          type: integer
+        outputTokens:
+          type: integer
+        cachedTokens:
+          type: integer
+        durationMs:
+          type: integer
+
+    WeeklyReportResponse:
+      type: object
+      description: 리포트가 정상 생성된 경우 (status="completed" 등)
+      properties:
+        status:
+          type: string
+          example: completed
+        userName:
+          type: string
+        weekStart:
+          type: string
+          format: date
+        keywords:
+          type: array
+          items:
+            type: string
+        summaryMessage:
+          type: string
+        stats:
+          $ref: "#/components/schemas/InsightStats"
+        insights:
+          type: array
+          items:
+            $ref: "#/components/schemas/InsightItem"
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Recommendation"
+        emotionGraph:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmotionPoint"
+        generationMeta:
+          $ref: "#/components/schemas/GenerationMeta"
+        errorCode:
+          type: string
+          nullable: true
+        errorMessage:
+          type: string
+          nullable: true
+        retrySuggested:
+          type: boolean
+          nullable: true
+        reportImageBase64:
+          type: string
+          nullable: true
+          description: 데모용 리포트 이미지(base64), 없으면 null
+
+    NoReportResponse:
+      type: object
+      description: 기록 부족 등으로 리포트가 아직 생성되지 않은 경우
+      properties:
+        status:
+          type: string
+          example: no_report
